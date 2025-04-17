@@ -3,6 +3,7 @@ import cors from 'cors';
 import {connectToDB} from "./config/db.js";
 import product_router from "./routers/ProductRouters.js";
 import order_router from "./routers/OrderRouters.js";
+import user_router from "./routers/UserRouters.js";
 
 const app = express();
 const corsOptions = {
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(cors(corsOptions));
 app.use("/api/products", product_router)
 app.use("/api/orders", order_router)
+app.use("/api/auth", user_router)
 
 
 connectToDB().then(()=>{
