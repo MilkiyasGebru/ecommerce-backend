@@ -5,11 +5,18 @@ import product_router from "./routers/ProductRouters.js";
 import order_router from "./routers/OrderRouters.js";
 
 const app = express();
+const corsOptions = {
+    origin: "*", // Or an array of allowed origins
+    methods:['GET', 'PUT', 'POST']  ,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // If you need to handle cookies
+    maxAge: 3600,
+};
 
 app.use(express.json());
-
-app.use("/api/products",cors(), product_router)
-app.use("/api/orders",cors(), order_router)
+app.use(cors(corsOptions));
+app.use("/api/products", product_router)
+app.use("/api/orders", order_router)
 
 
 connectToDB().then(()=>{
