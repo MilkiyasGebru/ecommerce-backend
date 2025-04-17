@@ -6,8 +6,8 @@ const OrderSchema = new mongoose.Schema({
         ref: 'customer',
         required: true,
     },
-    product_name:{
-        type: String,
+    products:{
+        type: [[mongoose.Schema.Types.ObjectId, Number]],
         required: true,
     }
 }, {timestamps: true});
