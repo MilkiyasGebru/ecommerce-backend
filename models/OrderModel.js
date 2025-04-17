@@ -9,6 +9,10 @@ const OrderSchema = new mongoose.Schema({
     products:{
         type: [[mongoose.Schema.Types.ObjectId, Number]],
         required: true,
+    },
+    total_price: {
+        type: Number,
+        required: true,
     }
 }, {timestamps: true});
 
