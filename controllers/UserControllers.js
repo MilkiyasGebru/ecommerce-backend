@@ -10,7 +10,7 @@ export const register_user = async (req, res) => {
     }
 
     const exists = await UserModel.findOne({ email:email });
-    if(!exists){
+    if(exists){
         return res.status(400).json({error:"Email is already taken"})
     }
 
@@ -39,5 +39,5 @@ export const login_user = async (req, res) => {
         return res.status(400).json({error:"Invalid Credentials"})
     }
 
-    return user;
+    return res.status(200).json({id: user._id, email:user.email});
 }
