@@ -1,11 +1,8 @@
 import OrderModel from "../models/OrderModel.js";
+import {ENV_VARS} from "../config/env_var.js";
+import stripe from "stripe";
 
-const orders =[
-{
-    customer_id:"asd",
-    product_name:'Engine'
-}
-]
+
 export const getAllOrders = async (req,res)=>{
     const all_orders = await OrderModel.find()
     if(!all_orders){
@@ -37,4 +34,51 @@ export const getOrdersByCustomerId = async(req,res)=>{
     const {customer_id}=req.params
     const all_orders = await OrderModel.find({customer_id: customer_id})
     res.status(200).json({orders: all_orders})
+}
+
+export const handleCheckOutSession = async (req,res)=>{
+
+    const _stripe = stripe(ENV_VARS.STRIPE_API_KEY)
+
+    const products = req.body
+
+    const items = Object.entries(products).map((item)=>{
+        return {
+            price_data : {
+                currency : 'usd',
+                product_data: {
+                    name : item[0]
+                },
+                unit_amount: item[1][1]*100
+            },
+            quantity : item[1][0]
+        }
+    })
+
+    const session = await _stripe.checkout.sessions.create({
+        line_items: items,
+        metadata: {
+            orderId: 'order_abc123',
+            cart: JSON.stringify([
+                {
+                    sellerName: "Milkiyas Gebru",
+                    sellerId: "user_123",
+                    stripeAccountId: "acct_1ExampleA",
+                    amount: 5000,
+                },
+                {
+                    sellerName: "Kidus Gebremichael",
+                    sellerId: "user_456",
+                    stripeAccountId: "acct_1ExampleB",
+                    amount: 3000,
+                },
+            ]),
+        },
+        mode: 'payment',
+        success_url: `${ENV_VARS.BACKEND_URL}/success`,
+        cancel_url: `${ENV_VARS.BACKEND_URL}/home`,
+    });
+
+
+    res.json({status_code:303,url:session.url});
 }
