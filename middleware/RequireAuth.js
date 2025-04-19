@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken'
 import {verifyToken} from "../utils/ValidateToken.js";
 
 export const requireAuth = (req, res, next) => {
@@ -9,7 +8,6 @@ export const requireAuth = (req, res, next) => {
     }
     const token = authorization.split(' ')[1];
     try {
-        console.log("token is ", token);
         const payload = verifyToken(token);
         next()
     }

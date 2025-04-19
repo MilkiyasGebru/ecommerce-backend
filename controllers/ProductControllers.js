@@ -1,38 +1,14 @@
 import ProductModel from "../models/ProductModel.js";
 import productModel from "../models/ProductModel.js";
+import { v2 as cloudinary } from 'cloudinary'
+import {ENV_VARS} from "../config/env_var.js";
 
-const products = [
-    {
-        product_name: "tires",
-        category: "Tire",
-        brand: "BMW",
-        price: 100,
-    },
-    {
-        product_name: "suspension",
-        category: "Suspension",
-        brand: "Tesla",
-        price: 210,
-    },
-    {
-        product_name: "car paint",
-        category: "Paint",
-        brand: "Toyota",
-        price: 53,
-    },
-    {
-        product_name: "Head Light",
-        category: "Light",
-        brand: "BMW",
-        price: 11.23,
-    },
-    {
-        product_name: "engine",
-        category: "Engine",
-        brand: "Honda",
-        price: 1451,
-    },
-]
+cloudinary.config({
+    cloud_name: ENV_VARS.CLOUDINARY_CLOUD_NAME,
+    api_key: ENV_VARS.CLOUDINARY_API_KEY,
+    api_secret: ENV_VARS.CLOUDINARY_API_SECRET
+})
+
 
 export const getLatestProducts = async (req,res)=>{
 
@@ -81,8 +57,10 @@ export const getProductsByBrand = async(req,res)=>{
     res.status(200).json(get_by_brand)
 }
 
-export const addProduct = async (req, res)=>{
-    const {product_name, brand, category, price, description} = req.body
-    await ProductModel.create({product_name, brand, category, price, product_description:description})
+export const createProduct = async (req, res)=>{
+
+    const result = await cloudinary.uploader.upload(req.file.path);
+    const {product_name, brand, category, price, description,} = req.body
+    const product_added = await ProductModel.create({product_name, brand, category, price, product_description:description,image:result.url})
     return res.status(201).json({message:"Product Added"})
 }
