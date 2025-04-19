@@ -1,5 +1,6 @@
 import UserModel from "../models/UserModel.js";
 import bcrypt from "bcrypt";
+import {create_token} from "../utils/GenerateToken.js";
 
 export const register_user = async (req, res) => {
 
@@ -18,7 +19,7 @@ export const register_user = async (req, res) => {
     const hashed_password = await bcrypt.hash(password, salt);
 
     const user = await UserModel.create({username:username,password:hashed_password,email:email})
-    return res.status(200).json({user: user})
+    return res.status(200).json({token: create_token(user._id)})
 
 }
 
@@ -39,5 +40,5 @@ export const login_user = async (req, res) => {
         return res.status(400).json({error:"Invalid Credentials"})
     }
 
-    return res.status(200).json({id: user._id, email:user.email});
+    return res.status(200).json({token: create_token(user._id)});
 }
