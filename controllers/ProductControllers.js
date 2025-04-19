@@ -2,6 +2,7 @@ import ProductModel from "../models/ProductModel.js";
 import productModel from "../models/ProductModel.js";
 import { v2 as cloudinary } from 'cloudinary'
 import {ENV_VARS} from "../config/env_var.js";
+import * as fs from "node:fs";
 
 cloudinary.config({
     cloud_name: ENV_VARS.CLOUDINARY_CLOUD_NAME,
@@ -61,6 +62,13 @@ export const createProduct = async (req, res)=>{
 
     const result = await cloudinary.uploader.upload(req.file.path);
     const {product_name, brand, category, price, description,} = req.body
+    fs.unlink(req.file.path, (err) => {
+        if (err) {
+            console.error("Failed to delete the file:", err);
+        } else {
+            console.log("Temporary file deleted:", req.file.path);
+        }
+    });
     const product_added = await ProductModel.create({product_name, brand, category, price, product_description:description,image:result.url})
     return res.status(201).json({message:"Product Added"})
 }
