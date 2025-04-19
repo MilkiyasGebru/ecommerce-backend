@@ -7,4 +7,6 @@ export const ENV_VARS = {
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
     JWT_SECRET: process.env.JWT_SECRET,
+    STRIPE_API_KEY: process.env.STRIPE_API_KEY,
+    BACKEND_URL: process.env.BACKEND_URL
 }
