@@ -22,8 +22,9 @@ export const getOrderByOrderId = async (req,res)=>{
 
 export const createOrder = async(req,res)=>{
 
-    const {customer_id, products,total_price} = req.body
-    const create_order = await OrderModel.create({customer_id,products,total_price})
+    const {customer_id,customer_email, products,total_price} = req.body
+    console.log(customer_id,customer_id,products,total_price,customer_email)
+    const create_order = await OrderModel.create({customer_id,products,total_price,customer_email})
     if(!create_order){
         return res.status(400).json({error:"Order Failed"})
     }
@@ -81,4 +82,15 @@ export const handleCheckOutSession = async (req,res)=>{
 
 
     res.json({status_code:303,url:session.url});
+}
+
+export const getByOrderEmail = async(req,res) =>{
+    const {email} = req.params
+    console.log("This is the order email requested ",email)
+    const getorder = await OrderModel.find({customer_email: email })
+    if(!getorder){
+        return res.status(404).json({error:"No order found"})
+    }
+    res.status(200).json({orders: getorder})
+
 }
