@@ -14,7 +14,7 @@ cloudinary.config({
 export const getLatestProducts = async (req,res)=>{
 
 
-    const latest_products = await ProductModel.find({}).sort({createdAt: -1}).limit(2)
+    const latest_products = await ProductModel.find({}).sort({createdAt: -1}).limit(10)
     if (!latest_products){
         return res.status(404).json({message:"No products found"})
     }
@@ -22,21 +22,31 @@ export const getLatestProducts = async (req,res)=>{
 }
 
 export const getTrendingProducts = async (req,res)=>{
-    const trending_products = await ProductModel.find().sort({sales_count: -1}).limit(1)
+    const trending_products = await ProductModel.find({}).sort({sales_count: -1}).limit(10)
     res.status(200).json({products: trending_products})
 }
 
 export const getAllProducts = async (req,res)=>{
 
-    const {categories, brands} = req.query
+    const {categories, brands,year, minimum, maximum} = req.query
+    console.log("This is the request ", req.query)
+    console.log(minimum, maximum)
     const filter_options = {}
+
     if (categories){
         filter_options.category = categories.split(",")
     }
     if (brands){
         filter_options.brand = brands.split(",")
     }
-    const all_products = await ProductModel.find(filter_options)
+    if(year){
+        filter_options.year = year
+    }
+    if (minimum && maximum){
+        filter_options.price = {$gte: parseInt(minimum, 10), $lte: parseInt(maximum, 10)}
+    }
+    const all_products = await ProductModel.find(
+    filter_options)
     if(!all_products){
         return res.status(404).json({message:"No products found"})
     }
@@ -61,7 +71,7 @@ export const getProductsByBrand = async(req,res)=>{
 export const createProduct = async (req, res)=>{
 
     const result = await cloudinary.uploader.upload(req.file.path);
-    const {product_name, brand, category, price, description,} = req.body
+    const {product_name,year, brand, category, price, description,} = req.body
     fs.unlink(req.file.path, (err) => {
         if (err) {
             console.error("Failed to delete the file:", err);
@@ -69,6 +79,6 @@ export const createProduct = async (req, res)=>{
             console.log("Temporary file deleted:", req.file.path);
         }
     });
-    const product_added = await ProductModel.create({product_name, brand, category, price, product_description:description,image:result.url})
+    const product_added = await ProductModel.create({product_name, year, brand, category, price, product_description:description,image:result.url})
     return res.status(201).json({message:"Product Added"})
 }

@@ -7,6 +7,7 @@ import {
     getProductsByCategory,
     getTrendingProducts
 } from "../controllers/ProductControllers.js";
+import {requireAuth} from "../middleware/RequireAuth.js";
 
 // const storage = multer.memoryStorage();
 const storage = multer.diskStorage({
@@ -29,6 +30,6 @@ product_router.get("/trending",getTrendingProducts)
 product_router.get("/",getAllProducts)
 product_router.get("/:category",getProductsByCategory)
 product_router.get("/brand/:brand",getProductsByBrand)
-product_router.post("/add",upload.single('photo'), createProduct)
+product_router.post("/add",requireAuth,upload.single('photo'), createProduct)
 
 export default product_router;
