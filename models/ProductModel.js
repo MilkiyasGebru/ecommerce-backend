@@ -29,6 +29,10 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    year : {
+        type: Number,
+        required: true,
+    }
 
 }, {timestamps: true});
 
