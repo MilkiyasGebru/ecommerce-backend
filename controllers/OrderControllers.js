@@ -85,12 +85,6 @@ export const handleCheckOutSession = async (req, res) => {
             orderId: "order_abc123",
             cart: JSON.stringify([
                 {
-                    sellerName: "Milkiyas Gebru",
-                    sellerId: "user_123",
-                    stripeAccountId: "acct_1ExampleA",
-                    amount: 5000,
-                },
-                {
                     sellerName: "Kidus Gebremichael",
                     sellerId: "user_456",
                     stripeAccountId: "acct_1ExampleB",
@@ -100,7 +94,7 @@ export const handleCheckOutSession = async (req, res) => {
         },
         mode: "payment",
         success_url: `https://autoshoopa.vercel.app/Confirmation?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url:` https://autoshoopa.vercel.app/shop`,
+    cancel_url:`https://autoshoopa.vercel.app/shop`,
 });
 
     try {
