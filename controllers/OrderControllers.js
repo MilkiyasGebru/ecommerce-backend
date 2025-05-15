@@ -69,7 +69,7 @@ export const handleCheckOutSession = async (req, res) => {
     const items = Object.entries(products).map((item) => {
         return {
             price_data: {
-                currency: "usd",
+                currency: "etb",
                 product_data: {
                     name: item[0],
                 },
