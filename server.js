@@ -7,10 +7,10 @@ import user_router from "./routers/UserRouters.js";
 
 const app = express();
 const corsOptions = {
-    origin: ["https://autoshoopa.vercel.app"], // Or an array of allowed origins
+    origin: ["https://autoshoopa.vercel.app"],
     methods:['GET', 'PUT', 'POST']  ,
     allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true, // If you need to handle cookies
+    credentials: true,
     maxAge: 3600,
 };
 
