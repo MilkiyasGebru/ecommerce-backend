@@ -19,7 +19,7 @@ export const register_user = async (req, res) => {
     const hashed_password = await bcrypt.hash(password, salt);
 
     const user = await UserModel.create({username:username,password:hashed_password,email:email})
-    return res.status(200).json({token: create_token(user._id)})
+    return res.status(200).json({token: create_token(user._id), username:user.username})
 
 }
 
