@@ -28,7 +28,7 @@ export const getTrendingProducts = async (req,res)=>{
 
 export const getAllProducts = async (req,res)=>{
 
-    const {categories, brands,year, minimum, maximum} = req.query
+    const {categories, brands,year,year2, minimum, maximum} = req.query
     console.log("This is the request ", req.query)
     console.log(minimum, maximum)
     const filter_options = {}
@@ -39,8 +39,11 @@ export const getAllProducts = async (req,res)=>{
     if (brands){
         filter_options.brand = brands.split(",")
     }
-    if(year){
-        filter_options.year = year
+    if(year && year2){
+        filter_options.year = {
+            $gte: parseInt(year,10),
+            $lte: parseInt(year2,10)
+        }
     }
     if (minimum && maximum){
         filter_options.price = {$gte: parseInt(minimum, 10), $lte: parseInt(maximum, 10)}
@@ -71,7 +74,7 @@ export const getProductsByBrand = async(req,res)=>{
 export const createProduct = async (req, res)=>{
 
     const result = await cloudinary.uploader.upload(req.file.path);
-    const {product_name,year, brand, category, price, description,} = req.body
+    const {product_name,year, brand,quantity, category, price, description,} = req.body
     fs.unlink(req.file.path, (err) => {
         if (err) {
             console.error("Failed to delete the file:", err);
@@ -79,6 +82,6 @@ export const createProduct = async (req, res)=>{
             console.log("Temporary file deleted:", req.file.path);
         }
     });
-    const product_added = await ProductModel.create({product_name, year, brand, category, price, product_description:description,image:result.url})
+    const product_added = await ProductModel.create({product_name, year, brand,quantity, category, price, product_description:description,image:result.url})
     return res.status(201).json({message:"Product Added"})
 }
