@@ -87,6 +87,7 @@ export const handleCheckOutSession = async (req, res) => {
                 name: product.product_name,
                 seller: product.seller,
                 selleremail: product.seller_email,
+                price: product.price
             };
         })
     );
@@ -104,6 +105,7 @@ export const handleCheckOutSession = async (req, res) => {
                     sellerName: detail.seller,
                     productName: detail.name,
                     selleremail: detail.selleremail,
+                    price: detail.price
                 }))
             ),
         },
