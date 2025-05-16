@@ -55,8 +55,9 @@ export const handleCheckOutSession = async (req, res) => {
             }
             if (product.quantity < quantity) {
                 return res.status(400).json({
-                    error: "Insufficient quantity for product ${product.product_name}. Available: ${product.quantity}, Requested: ${quantity}",
-            });
+                    error:
+                        "Insufficient quantity for product ${product.product_name}. Available: ${product.quantity}, Requested: ${quantity}",
+                });
             }
         }
     } catch (error) {
@@ -79,23 +80,39 @@ export const handleCheckOutSession = async (req, res) => {
         };
     });
 
+    const productDetails = await Promise.all(
+        Object.keys(products).map(async (productId) => {
+            const product = await ProductModel.findById(productId);
+            return {
+                name: product.product_name,
+                seller: product.seller,
+                selleremail: product.seller_email,
+            };
+        })
+    );
+
+    const orderId = `ORD_${Date.now()}_${Math.random()
+        .toString(36)
+        .substr(2, 9)}`;
+
     const session = await _stripe.checkout.sessions.create({
         line_items: items,
         metadata: {
-            orderId: "order_abc123",
-            cart: JSON.stringify([
-                {
-                    sellerName: "Kidus Gebremichael",
-                    sellerId: "user_456",
-                    stripeAccountId: "acct_1ExampleB",
-                    amount: 3000,
-                },
-            ]),
+            orderId: orderId,
+            cart: JSON.stringify(
+                productDetails.map((detail) => ({
+                    sellerName: detail.seller,
+                    productName: detail.name,
+                    selleremail: detail.selleremail,
+                }))
+            ),
         },
         mode: "payment",
-        success_url: `https://autoshoopa.vercel.app/Confirmation?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url:`https://autoshoopa.vercel.app/shop`,
-});
+        success_url: `https://autoshoopa.vercel.app/Confirmation?products=${encodeURIComponent(
+            JSON.stringify(productDetails)
+        )}`,
+        cancel_url: `https://autoshoopa.vercel.app/shop`,
+    });
 
     try {
         for (const [productId, [quantity, price]] of Object.entries(products)) {
@@ -113,15 +130,5 @@ export const handleCheckOutSession = async (req, res) => {
             .json({ error: "Failed to update product quantities and sales count" });
     }
 
-    res.json({ status_code: 303, url: session.url });
-};
-
-export const getByOrderEmail = async (req, res) => {
-    const { email } = req.params;
-    console.log("This is the order email requested ", email);
-    const getorder = await OrderModel.find({ customer_email: email });
-    if (!getorder) {
-        return res.status(404).json({ error: "No order found" });
-    }
-    res.status(200).json({ orders: getorder });
+    res.json({ status_code: 303, url: session.url, orderId: orderId });
 };
