@@ -132,3 +132,12 @@ export const handleCheckOutSession = async (req, res) => {
 
     res.json({ status_code: 303, url: session.url, orderId: orderId });
 };
+export const getByOrderEmail = async (req, res) => {
+    const { email } = req.params;
+    console.log("This is the order email requested ", email);
+    const getorder = await OrderModel.find({ customer_email: email });
+    if (!getorder) {
+        return res.status(404).json({ error: "No order found" });
+    }
+    res.status(200).json({ orders: getorder });
+};
