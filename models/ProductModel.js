@@ -39,6 +39,14 @@ const ProductSchema = new mongoose.Schema(
             type: Number,
             required: true,
         },
+        seller: {
+            type: String,
+            required: true,
+        },
+        seller_email: {
+            type: String,
+            required: true,
+        },
     },
     { timestamps: true }
 );
